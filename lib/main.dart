@@ -87,30 +87,42 @@ class BooksListItem extends StatelessWidget {
         title: Text(book.title),
         subtitle: Text(book.author.fullName),
         onTap: () {
-          Navigator.of(context).push(BookDetailsPage.route());
+          Navigator.of(context).push(BookDetailsPage.route(book));
         });
   }
 }
 
 class BookDetailsPage extends StatelessWidget {
-  static Route<void> route() {
+  const BookDetailsPage({Key? key, required this.book});
+  final Book book;
+
+  static Route<void> route(Book book) {
     return MaterialPageRoute(
-      builder: (context) => BookDetailsPage(),
+      builder: (context) => BookDetailsPage(book: book),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Book title goes here')),
+      appBar: AppBar(title: Text(book.title)),
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('[.headline4] Author name and age goes here'),
-            Text('[.headline6] Publishing year goes here'),
-            Text('[.caption] Amount of pages goes here'),
+          children: [
+            Text(
+              book.author.fullName,
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            Text(
+              '$book.publishingYear',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Text(
+              '$book.totalPages pages',
+              style: Theme.of(context).textTheme.caption,
+            ),
           ],
         ),
       ),
