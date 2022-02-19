@@ -53,45 +53,72 @@ class BookCatalogApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BooksBloc()..add(const GetBookCatalog()),
-      child: MaterialApp(
-        title: 'Book Catalog',
-        home: BookListPage(key: const Key('bookListPage'), books: books),
+    return MaterialApp(
+      title: 'Book Catalog',
+      home: BlocProvider(
+        create: (context) =>
+            BooksBloc()..add(const GetBookCatalog(books: bookCatalog)),
+        child: BooksListPage(
+          key: const Key('booksListPage'),
+          books: books,
+        ),
       ),
     );
   }
 }
 
-class BookListPage extends StatelessWidget {
-  const BookListPage({Key? key, required this.books}) : super(key: key);
+class BooksListPage extends StatelessWidget {
+  const BooksListPage({Key? key, required this.books}) : super(key: key);
 
   final List<Book> books;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('scaffold'),
       appBar: AppBar(
         title: const Text('Library'),
-        actions: const <Widget>[UpdateButton()],
+        actions: const <Widget>[
+          UpdateButton(),
+        ],
       ),
-      body: BlocBuilder<BooksBloc, BooksState>(
-        builder: (context, state) {
-          if (state is HasBooksCatalog) {
-            return ListView.builder(
-              itemBuilder: (BuildContext context, int index) => BooksListItem(
-                key: Key('booksListItem$index'),
-                book: bookCatalog[index],
-              ),
-              itemCount: bookCatalog.length,
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+      body: const BooksListBody(),
+    );
+  }
+}
+
+class BooksListBody extends StatelessWidget {
+  const BooksListBody({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BooksBloc, BooksState>(
+      builder: (context, state) {
+        if (state is BooksPopulated) {
+          return const BooksListView(
+            key: Key('booksListView'),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+}
+
+class BooksListView extends StatelessWidget {
+  const BooksListView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemBuilder: (BuildContext context, int index) => BooksListItem(
+        key: Key('booksListItem$index'),
+        book: bookCatalog[index],
       ),
+      itemCount: bookCatalog.length,
     );
   }
 }
@@ -102,11 +129,14 @@ class UpdateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-        icon: const Icon(
-          Icons.get_app,
-          color: Colors.white,
-        ),
-        onPressed: () => context.read<BooksBloc>().add(const GetBookCatalog()));
+      icon: const Icon(
+        Icons.get_app,
+        color: Colors.white,
+      ),
+      onPressed: () => context.read<BooksBloc>().add(
+            const GetBookCatalog(books: bookCatalog),
+          ),
+    );
   }
 }
 
@@ -150,11 +180,11 @@ class BookDetailsPage extends StatelessWidget {
               style: Theme.of(context).textTheme.headline4,
             ),
             Text(
-              '$book.publishingYear',
+              '${book.publishingYear}',
               style: Theme.of(context).textTheme.headline6,
             ),
             Text(
-              '$book.totalPages pages',
+              '${book.totalPages} pages',
               style: Theme.of(context).textTheme.caption,
             ),
           ],
