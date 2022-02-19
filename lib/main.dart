@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import './bloc/books_bloc.dart';
 
 class Author {
   const Author(this.fullName, this.age);
@@ -42,7 +44,7 @@ const bookCatalog = [
   ),
 ];
 
-void main() => runApp(BookCatalogApp(books: bookCatalog));
+void main() => runApp(const BookCatalogApp(books: bookCatalog));
 
 class BookCatalogApp extends StatelessWidget {
   const BookCatalogApp({Key? key, required this.books}) : super(key: key);
@@ -51,9 +53,12 @@ class BookCatalogApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Book Catalog',
-      home: BookListPage(key: const Key('bookListPage'), books: books),
+    return BlocProvider(
+      create: (context) => BooksBloc()..add(const GetBookCatalog()),
+      child: MaterialApp(
+        title: 'Book Catalog',
+        home: BookListPage(key: const Key('bookListPage'), books: books),
+      ),
     );
   }
 }
@@ -66,13 +71,42 @@ class BookListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Library')),
-      body: ListView.builder(
-        itemBuilder: (BuildContext context, int index) => BooksListItem(
-            key: Key('booksListItem$index'), book: bookCatalog[index]),
-        itemCount: bookCatalog.length,
+      appBar: AppBar(
+        title: const Text('Library'),
+        actions: const <Widget>[UpdateButton()],
+      ),
+      body: BlocBuilder<BooksBloc, BooksState>(
+        builder: (context, state) {
+          if (state is HasBooksCatalog) {
+            return ListView.builder(
+              itemBuilder: (BuildContext context, int index) => BooksListItem(
+                key: Key('booksListItem$index'),
+                book: bookCatalog[index],
+              ),
+              itemCount: bookCatalog.length,
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
+  }
+}
+
+class UpdateButton extends StatelessWidget {
+  const UpdateButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+        icon: const Icon(
+          Icons.get_app,
+          color: Colors.white,
+        ),
+        onPressed: () => context.read<BooksBloc>().add(const GetBookCatalog()));
   }
 }
 
