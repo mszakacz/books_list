@@ -9,8 +9,9 @@ abstract class BooksEvent extends Equatable {
 }
 
 class GetBookCatalog extends BooksEvent {
-  const GetBookCatalog();
+  const GetBookCatalog({required this.books});
+  final List<Book> books;
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [books];
 }

@@ -1,6 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:books_list/main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:flutter/material.dart';
+import 'package:books_list/bloc/books_bloc.dart';
+import 'package:mocktail/mocktail.dart';
+
+class BooksBlocMock extends MockBloc<BooksEvent, BooksState>
+    implements BooksBloc {}
 
 void main() {
   group(
@@ -13,77 +21,61 @@ void main() {
         });
       });
 
-      group('BookListPage', () {
-        const book1 = Book(
-          title: 'Flutter In Action',
-          author: Author('Eric Windmill', 23),
-          publishingYear: 2019,
-          totalPages: 312,
-        );
-        const book2 = Book(
-          title: 'Flutter For Beginners',
-          author: Author('Alessandro Biessek', 45),
-          publishingYear: 2018,
-          totalPages: 198,
-        );
-        const book3 = Book(
-          title: 'Programming Flutter',
-          author: Author('Carmine Zaccagnino', 33),
-          publishingYear: 2020,
-          totalPages: 422,
-        );
+      group('BooksListPage', () {
+        testWidgets('renders BooksListView', (WidgetTester tester) async {
+          final booksBloc = BooksBlocMock();
+          when(() => booksBloc.state).thenReturn(
+            const BooksPopulated(catalog: bookCatalog),
+          );
 
-        testWidgets('displays 3 books', (WidgetTester tester) async {
+          whenListen<BooksState>(
+            booksBloc,
+            Stream<BooksState>.fromIterable([
+              const BooksLoading(),
+              const BooksPopulated(
+                catalog: bookCatalog,
+              )
+            ]),
+          );
           await tester.pumpWidget(
-              const MaterialApp(home: BookListPage(books: bookCatalog)));
-
-          var booksListItem = find.byType(BooksListItem);
-          expect(booksListItem, findsNWidgets(3));
+            MaterialApp(
+              home: BlocProvider<BooksBloc>(
+                create: (c) => booksBloc,
+                child: const BooksListPage(books: bookCatalog),
+              ),
+            ),
+          );
+          expect(find.byType(BooksListView), findsOneWidget);
         });
 
-        testWidgets('displays first book title', (WidgetTester tester) async {
+        testWidgets('displays all the books passed in from bookCatalog.',
+            (WidgetTester tester) async {
+          final booksBloc = BooksBlocMock();
+          when(() => booksBloc.state).thenReturn(
+            const BooksPopulated(catalog: bookCatalog),
+          );
+
+          whenListen<BooksState>(
+            booksBloc,
+            Stream<BooksState>.fromIterable([
+              const BooksLoading(),
+              const BooksPopulated(
+                catalog: bookCatalog,
+              )
+            ]),
+          );
           await tester.pumpWidget(
-              const MaterialApp(home: BookListPage(books: bookCatalog)));
-          final titleFinder = find.text('Flutter In Action');
-          expect(titleFinder, findsOneWidget);
-        });
-
-        testWidgets('displays first book author', (WidgetTester tester) async {
-          await tester.pumpWidget(
-              const MaterialApp(home: BookListPage(books: bookCatalog)));
-
-          final authorFinder = find.text('Eric Windmill');
-          expect(authorFinder, findsOneWidget);
-        });
-
-        testWidgets('displays second book title', (WidgetTester tester) async {
-          await tester.pumpWidget(
-              const MaterialApp(home: BookListPage(books: bookCatalog)));
-          final titleFinder = find.text('Flutter For Beginners');
-          expect(titleFinder, findsOneWidget);
-        });
-
-        testWidgets('displays second book author', (WidgetTester tester) async {
-          await tester.pumpWidget(
-              const MaterialApp(home: BookListPage(books: bookCatalog)));
-
-          final authorFinder = find.text('Alessandro Biessek');
-          expect(authorFinder, findsOneWidget);
-        });
-
-        testWidgets('displays third book title', (WidgetTester tester) async {
-          await tester.pumpWidget(
-              const MaterialApp(home: BookListPage(books: bookCatalog)));
-          final titleFinder = find.text('Programming Flutter');
-          expect(titleFinder, findsOneWidget);
-        });
-
-        testWidgets('displays third book author', (WidgetTester tester) async {
-          await tester.pumpWidget(
-              const MaterialApp(home: BookListPage(books: bookCatalog)));
-
-          final authorFinder = find.text('Carmine Zaccagnino');
-          expect(authorFinder, findsOneWidget);
+            MaterialApp(
+              home: BlocProvider<BooksBloc>(
+                create: (c) => booksBloc,
+                child: const BooksListPage(books: bookCatalog),
+              ),
+            ),
+          );
+          expect(
+            find.byType(BooksListItem),
+            findsNWidgets(bookCatalog.length),
+          );
         });
       });
     },
