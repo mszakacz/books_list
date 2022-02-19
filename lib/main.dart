@@ -68,7 +68,7 @@ class BookListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Library')),
       body: ListView.builder(
-        itemBuilder: (BuildContext contex, int index) =>
+        itemBuilder: (BuildContext context, int index) =>
             BooksListItem(book: bookCatalog[index]),
         itemCount: bookCatalog.length,
       ),
@@ -84,13 +84,21 @@ class BooksListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(book.title),
-      subtitle: Text(book.author.fullName),
-    );
+        title: Text(book.title),
+        subtitle: Text(book.author.fullName),
+        onTap: () {
+          Navigator.of(context).push(BookDetailsPage.route());
+        });
   }
 }
 
 class BookDetailsPage extends StatelessWidget {
+  static Route<void> route() {
+    return MaterialPageRoute(
+      builder: (context) => BookDetailsPage(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
