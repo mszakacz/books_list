@@ -23,28 +23,41 @@ class Book {
   final int totalPages;
 }
 
-const bookCatalog = [
-  Book(
-    title: 'Flutter In Action',
-    author: Author('Eric Windmill', 23),
-    publishingYear: 2019,
-    totalPages: 312,
-  ),
-  Book(
-    title: 'Flutter For Beginners',
-    author: Author('Alessandro Biessek', 45),
-    publishingYear: 2018,
-    totalPages: 198,
-  ),
-  Book(
-    title: 'Programming Flutter',
-    author: Author('Carmine Zaccagnino', 33),
-    publishingYear: 2020,
-    totalPages: 422,
-  ),
-];
+// const bookCatalog = [
+//   Book(
+//     title: 'Flutter In Action',
+//     author: Author('Eric Windmill', 23),
+//     publishingYear: 2019,
+//     totalPages: 312,
+//   ),
+//   Book(
+//     title: 'Flutter For Beginners',
+//     author: Author('Alessandro Biessek', 45),
+//     publishingYear: 2018,
+//     totalPages: 198,
+//   ),
+//   Book(
+//     title: 'Programming Flutter',
+//     author: Author('Carmine Zaccagnino', 33),
+//     publishingYear: 2020,
+//     totalPages: 422,
+//   ),
+// ];
 
-void main() => runApp(const BookCatalogApp(books: bookCatalog));
+final bookCatalog = List<Book>.generate(
+  100,
+  (index) => Book(
+    title: 'title${(index + 1)}',
+    author: const Author(
+      'name',
+      7,
+    ),
+    publishingYear: 1900 + index,
+    totalPages: 200 + 3 * index,
+  ),
+);
+
+void main() => runApp(BookCatalogApp(books: bookCatalog));
 
 class BookCatalogApp extends StatelessWidget {
   const BookCatalogApp({Key? key, required this.books}) : super(key: key);
@@ -57,7 +70,7 @@ class BookCatalogApp extends StatelessWidget {
       title: 'Book Catalog',
       home: BlocProvider(
         create: (context) =>
-            BooksBloc()..add(const GetBookCatalog(books: bookCatalog)),
+            BooksBloc()..add(GetBookCatalog(books: bookCatalog)),
         child: BooksListPage(
           key: const Key('booksListPage'),
           books: books,
@@ -134,7 +147,7 @@ class UpdateButton extends StatelessWidget {
         color: Colors.white,
       ),
       onPressed: () => context.read<BooksBloc>().add(
-            const GetBookCatalog(books: bookCatalog),
+            GetBookCatalog(books: bookCatalog),
           ),
     );
   }
