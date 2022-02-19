@@ -67,7 +67,25 @@ class BookListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Library')),
-      body: const Text('List of books goes here!'),
+      body: ListView.builder(
+        itemBuilder: (BuildContext contex, int index) =>
+            BooksListItem(book: bookCatalog[index]),
+        itemCount: bookCatalog.length,
+      ),
+    );
+  }
+}
+
+class BooksListItem extends StatelessWidget {
+  const BooksListItem({Key? key, required this.book}) : super(key: key);
+
+  final Book book;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(book.title),
+      subtitle: Text(book.author.fullName),
     );
   }
 }
