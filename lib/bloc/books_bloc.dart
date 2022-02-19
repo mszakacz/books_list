@@ -7,13 +7,13 @@ part 'books_event.dart';
 part 'books_state.dart';
 
 class BooksBloc extends Bloc<BooksEvent, BooksState> {
-  BooksBloc() : super(const BooksLoading()) {
+  BooksBloc() : super(const BooksInitial()) {
     on<GetBookCatalog>(_onGetBookCatalog);
   }
 
   void _onGetBookCatalog(GetBookCatalog event, Emitter<BooksState> emit) async {
     emit(const BooksLoading());
     await Future.delayed(const Duration(seconds: 1));
-    emit(const HasBooksCatalog(catalog: bookCatalog));
+    emit(BooksPopulated(catalog: event.books));
   }
 }

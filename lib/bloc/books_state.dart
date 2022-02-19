@@ -8,6 +8,13 @@ abstract class BooksState extends Equatable {
   List<Object?> get props => [];
 }
 
+class BooksInitial extends BooksState {
+  const BooksInitial();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class BooksLoading extends BooksState {
   const BooksLoading();
 
@@ -15,17 +22,17 @@ class BooksLoading extends BooksState {
   List<Object?> get props => [];
 }
 
-class HasBooksCatalog extends BooksState {
-  const HasBooksCatalog({required this.catalog});
+class BooksPopulated extends BooksState {
+  const BooksPopulated({required this.catalog});
   final List<Book> catalog;
 
   @override
   List<Object?> get props => [catalog];
 
-  HasBooksCatalog copyWith({
+  BooksPopulated copyWith({
     List<Book>? catalog,
   }) {
-    return HasBooksCatalog(
+    return BooksPopulated(
       catalog: catalog ?? this.catalog,
     );
   }
