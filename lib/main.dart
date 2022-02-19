@@ -45,7 +45,7 @@ const bookCatalog = [
 void main() => runApp(BookCatalogApp(books: bookCatalog));
 
 class BookCatalogApp extends StatelessWidget {
-  const BookCatalogApp({Key? key, required this.books});
+  const BookCatalogApp({Key? key, required this.books}) : super(key: key);
 
   final List<Book> books;
 
@@ -53,7 +53,7 @@ class BookCatalogApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Book Catalog',
-      home: BookListPage(books: books),
+      home: BookListPage(key: const Key('bookListPage'), books: books),
     );
   }
 }
@@ -68,8 +68,8 @@ class BookListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Library')),
       body: ListView.builder(
-        itemBuilder: (BuildContext context, int index) =>
-            BooksListItem(book: bookCatalog[index]),
+        itemBuilder: (BuildContext context, int index) => BooksListItem(
+            key: Key('booksListItem$index'), book: bookCatalog[index]),
         itemCount: bookCatalog.length,
       ),
     );
@@ -93,7 +93,7 @@ class BooksListItem extends StatelessWidget {
 }
 
 class BookDetailsPage extends StatelessWidget {
-  const BookDetailsPage({Key? key, required this.book});
+  const BookDetailsPage({Key? key, required this.book}) : super(key: key);
   final Book book;
 
   static Route<void> route(Book book) {
